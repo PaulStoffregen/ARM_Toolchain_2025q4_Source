@@ -32,6 +32,7 @@ Using MacOS 12.7.6, install homebrew and `Command_Line_Tools_for_Xcode_14.2.dmg`
 ```
 brew install gnu-getopt
 brew install autoconf automake libtool texinfo
+brew remove zstd
 ```
 
 Command to build:
@@ -40,10 +41,7 @@ Command to build:
 ./build-baremetal-toolchain.sh --enable-newlib-nano --release --disable-qemu --target=arm-none-eabi --config-flags-gcc=--with-multilib-list=aprofile,rmprofile --host=x86_64-apple-darwin
 ```
 
-Final output
-```
-mv bin-tar/arm-none-eabi-tools.tar.xz arm-gnu-toolchain-15.2.rel1-darwin-x86_64-arm-none-eabi.tar.xz
-```
+Final output file in bin-tar
 
 
 ## Raspberry Pi
