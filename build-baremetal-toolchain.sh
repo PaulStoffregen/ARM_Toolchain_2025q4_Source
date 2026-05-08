@@ -264,7 +264,7 @@ flag_morello=0
 check_targets="check-binutils check-ld check-gas check-gcc check-g++ check-target-libatomic check-target-libstdc++-v3 check-gdb"
 check_nano_targets="check-gcc-nano check-g++-nano check-target-libstdc++-v3-nano"
 # Parse command-line options
-args=$(getopt -ohj:l:x -l bugurl:,builddir:,config-flags-binutils:,config-flags-gcc:,config-flags-host-tools:,config-flags-qemu:,debug,debug-target,dejagnu-site:,dejagnu-src:,enable-gdb,enable-gdb-with-python:,disable-gdb,enable-gcc,disable-gcc,enable-binutils,disable-binutils,enable-newlib,disable-newlib,enable-maintainer-mode,disable-maintainer-mode,enable-newlib-nano,disable-newlib-nano,enable-newlib-nano-check,disable-newlib-nano-check,enable-qemu,disable-qemu,gdb-only,help,host-toolchain-path:,ldflags-for-target:,ldflags-for-nano-target:,newlib-installdir:,package,no-package,qemu-test-path:,release,no-release,resultdir:,srcdir:,tag:,tardir:,target:,target-board:,timestamp:,with-language:,check-gdb,no-check-gdb,morello,host: -n $(basename "$0") -- "$@")
+args=$(getopt -ohj:l:x -l bugurl:,builddir:,config-flags-binutils:,config-flags-gcc:,config-flags-host-tools:,config-flags-qemu:,debug,debug-target,dejagnu-site:,dejagnu-src:,enable-gdb,enable-gdb-with-python:,disable-gdb,enable-gcc,disable-gcc,enable-binutils,disable-binutils,enable-newlib,disable-newlib,enable-maintainer-mode,disable-maintainer-mode,enable-newlib-nano,disable-newlib-nano,enable-newlib-nano-check,disable-newlib-nano-check,enable-qemu,disable-qemu,gdb-only,help,host-toolchain-path:,ldflags-for-target:,ldflags-for-nano-target:,newlib-installdir:,package,no-package,qemu-test-path:,release,no-release,resultdir:,srcdir:,tag:,tardir:,target:,target-board:,timestamp:,with-language:,check-gdb,no-check-gdb,morello,host: -- "$@")
 eval set -- "$args"
 while [ $# -gt 0 ]; do
   if [ -n "${opt_prev:-}" ]; then
@@ -533,13 +533,13 @@ host_tools_install=$builddir/host-tools
 # dejagnu site.exp
 dejagnu_site="${dejagnu_site:-site-exhaustive-fastmodels.exp}"
 
-if [ -z "${dejagnu_src:-}" ]; then
-  # The dejagnu directory should be available in gnu-devtools-for-arm
-  find_component_or_error "$srcdir/gnu-devtools-for-arm" dejagnu
-fi
-#Set the DEJAGNU environment variable for check targets
-set_env_var DEJAGNU "$dejagnu_src/$dejagnu_site"
-check_if_readable $DEJAGNU
+#if [ -z "${dejagnu_src:-}" ]; then
+#  # The dejagnu directory should be available in gnu-devtools-for-arm
+#  find_component_or_error "$srcdir/gnu-devtools-for-arm" dejagnu
+#fi
+##Set the DEJAGNU environment variable for check targets
+#set_env_var DEJAGNU "$dejagnu_src/$dejagnu_site"
+#check_if_readable $DEJAGNU
 
 #libstdcxx_flags=--disable-wchar_t
 libstdcxx_flags=
@@ -564,6 +564,10 @@ if [ $release_flag -eq 0 ]; then
   flag_check_final=yes
 else
   cflags="-O2"
+  if [[ "$build" == "x86_64-apple-darwin" ]]; then
+    #cflags="-O2 -mmacosx-version-min=10.10" # binutils-gdb/binutils/rename.c error: 'utimensat'
+    cflags="-O2 -mmacosx-version-min=10.13"
+  fi
   flag_check_final=release
 fi
 
@@ -680,7 +684,8 @@ if empty_stages_p; then
   fi
 fi
 
-for component in gcc linux gmp mpfr mpc binutils newlib isl
+#for component in gcc linux gmp mpfr mpc binutils newlib isl
+for component in gcc gmp mpfr mpc binutils newlib isl
 do
   find_component_or_error "$srcdir" $component
 done

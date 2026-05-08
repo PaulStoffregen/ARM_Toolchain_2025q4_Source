@@ -22,9 +22,9 @@ target="$target"
 builddir="$builddir"
 prefix="$prefix"
 srcdir="$srcdir"
-dejagnu_src="$dejagnu_src"
-dejagnu_site="$dejagnu_site"
 EOF
+#dejagnu_src="$dejagnu_src"
+#dejagnu_site="$dejagnu_site"
 }
 
 number_of_cores()
@@ -50,6 +50,11 @@ extend ()
 # Get the triple of the machine we're running on, i.e. the build machine.
 find_build_triple ()
 {
+  hostname=$(hostname -s)
+  if [[ "$hostname" == "pi5" ]]; then
+    echo "arm-linux-gnueabihf"  # ugly hack for 32 bit Raspberry Pi
+    return 0
+  fi
   machine=$(uname -m)
   plat=$(uname -s)
   if [[ "$plat" == "Darwin" ]]; then
